@@ -4,27 +4,54 @@ pipeline:
   projectIdentifier: default_project
   orgIdentifier: default
   stages:
-    - stage:
-        name: Build
-        identifier: Build
-        type: CI
-        spec:
-          cloneCodebase: true
-          execution:
-            steps:
-              - step:
-                  type: Run
-                  name: Echo Welcome Message
-                  identifier: Echo_Welcome_Message
-                  spec:
-                    shell: Sh
-                    command: echo "Welcome to Harness CI"
-          platform:
-            os: Linux
-            arch: Amd64
-          runtime:
-            type: Cloud
-            spec: {}
+    - parallel:
+        - stage:
+            name: Build
+            identifier: Build
+            type: CI
+            spec:
+              cloneCodebase: true
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Echo Welcome Message
+                      identifier: Echo_Welcome_Message
+                      spec:
+                        shell: Sh
+                        command: echo "Welcome to Harness CI"
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+        - stage:
+            name: Custom stage
+            identifier: Custom_stage
+            description: custom stage for testing
+            type: Custom
+            spec:
+              environment:
+                environmentRef: Test
+                deployToAll: false
+              execution:
+                steps:
+                  - step:
+                      type: ShellScript
+                      name: ShellScript_1
+                      identifier: ShellScript_1
+                      spec:
+                        shell: Bash
+                        executionTarget: {}
+                        source:
+                          type: Inline
+                          spec:
+                            script: echo "Step"
+                        environmentVariables: []
+                        outputVariables: []
+                      timeout: 10m
+            tags: {}
   properties:
     ci:
       codebase:
